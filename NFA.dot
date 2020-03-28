@@ -1,13 +1,8 @@
 digraph {
 	fake0 [style=invisible]
-	C
 	A [root=true shape=doublecircle]
-	B
 	fake0 -> A [style=bold]
 	A -> A [label=a]
-	A -> B [label=b]
-	B -> A [label=a]
-	B -> B [label=b]
-	C -> A [label=a]
-	C -> C [label=b]
+	A -> A [label=b]
+	A -> A [label=c]
 }

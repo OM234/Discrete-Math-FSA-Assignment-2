@@ -164,7 +164,6 @@ def getNFATransitions(states, alphabet):
         transitionsList.append(transition)
 
     transitionsTuple = tuple(transitionsList)
-    print(transitionsTuple)
     return transitionsTuple
 
 
@@ -193,7 +192,25 @@ def buildDFADotFile(states, alphabet, transitions, root, acceptingStates):
 
 def buildNFADotFile(states, alphabet, transitions, roots, acceptingStates):
 
-    pass
+    dotFile = open("PA2.dot", "+w")
+
+    dotFile.write("digraph{\n\t")
+
+    for state in states:
+        dotFile.write(state)
+        if state in roots and state in acceptingStates:
+            dotFile.write(" [root=true, shape=doublecircle]")
+        elif state in roots:
+            dotFile.write(" [root=true]")
+        elif state in acceptingStates:
+            dotFile.write(" [shape=doublecircle]")
+        dotFile.write("\n\t")
+
+    for transition in transitions:
+        dotFile.write(transition[0] + " -> " + transition[2] + " [label=\"" + transition[1] + "\"]\n\t")
+
+    dotFile.write("}")
+    return dotFile
 
 
 isADFA = isDFA()
