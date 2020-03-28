@@ -1,6 +1,0 @@
-digraph{
-	A [root=true, shape=doublecircle]
-	A -> A [label="a"]
-	A -> A [label="b"]
-	A -> A [label="c"]
-	}
