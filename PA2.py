@@ -136,7 +136,36 @@ def getDFATransitions(states, alphabet):
 
 def getNFATransitions(states, alphabet):
 
-    pass
+    transitionsList = []
+    transitionsTuple = ()
+    numTransitions = ""
+
+    while numTransitions.isdigit() is False or int(numTransitions) < 1:
+        numTransitions = input("How many transitions? ")
+
+    for i in range(int(numTransitions)):
+
+        state = ""
+        resultState = ""
+        transitionSymbol = ""
+
+        print("\ntransition #" + str(i + 1))
+
+        while state not in states:
+            state = input("Initial state: ")
+
+        while transitionSymbol not in alphabet:
+            transitionSymbol = input("Transition symbol: ")
+
+        while resultState not in states:
+            resultState = input("Result state: ")
+
+        transition = (state, transitionSymbol, resultState)
+        transitionsList.append(transition)
+
+    transitionsTuple = tuple(transitionsList)
+    print(transitionsTuple)
+    return transitionsTuple
 
 
 def buildDFADotFile(states, alphabet, transitions, root, acceptingStates):
