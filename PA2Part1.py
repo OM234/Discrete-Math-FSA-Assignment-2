@@ -216,6 +216,7 @@ def buildNFADotFile(states, alphabet, transitions, roots, acceptingStates):
 isADFA = isDFA()
 makeFSA(isADFA)
 
+
 if isADFA:
     os.environ["PATH"] += os.pathsep + 'D:/Program Files (x86)/Graphviz2.38/bin/'
     dfa_example = automata_IO.dfa_dot_importer("PA2.dot")

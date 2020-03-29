@@ -1,10 +1,13 @@
 digraph{
 	A [root=true]
-	B
+	A.B
 	C [shape=doublecircle]
-	A -> A [label="0"]
-	A -> A [label="1"]
-	A -> B [label="1"]
-	B -> C [label="0"]
-	B -> C [label="1"]
+	B.C [shape=doublecircle]
+	A -> A.B [label="a"]
+	A -> C [label="b"]
+	A.B -> A.B [label="a"]
+	A.B -> B.C [label="b"]
+	C -> A.B [label="b"]
+	B.C -> A [label="a"]
+	B.C -> A.B [label="b"]
 	}

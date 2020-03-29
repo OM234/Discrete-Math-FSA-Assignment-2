@@ -1,4 +1,5 @@
 from PySimpleAutomata import automata_IO, DFA, NFA
+import TablePrinter
 import os
 
 
@@ -14,6 +15,7 @@ def makeDFA():
     DFAAcceptingStates = getDFAAcceptingStates(DFAStates, NFAAcceptingStates)
     buildDFADotFile(DFAStates, alphabet, DFATransitionTable, DFARoot, DFAAcceptingStates)
     makeDFASVGFile()
+    printTable(DFAStates, alphabet, DFATransitionTable, DFARoot, DFAAcceptingStates)
 
 
 def getNFAStates():
@@ -241,6 +243,7 @@ def getDFAAcceptingStates(DFAStates, NFAAcceptingStates):
 
     return tuple(DFAAcceptingStates)
 
+
 def makeDFASVGFile():
 
     os.environ["PATH"] += os.pathsep + 'D:/Program Files (x86)/Graphviz2.38/bin/'
@@ -249,6 +252,12 @@ def makeDFASVGFile():
     DFA.dfa_minimization(dfa_example)
     automata_IO.dfa_to_dot(dfa_example, "DFA", r"D:/School/Concordia - Graduate Diploma in Computer Science/COMP 5361 - "
                                            r"Discrete Structures and Formal Languages/Programming Assignment 2")
+
+
+def printTable(DFAStates, alphabet, DFATransitionTable, DFARoot, DFAAcceptingStates):
+
+    DFARoot = (DFARoot,)
+    TablePrinter.generateTable(DFAStates, alphabet, DFATransitionTable, DFARoot, DFAAcceptingStates)
 
 
 makeDFA()
