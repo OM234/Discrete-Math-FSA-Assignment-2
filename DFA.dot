@@ -1,0 +1,19 @@
+digraph {
+	fake [style=invisible]
+	sink
+	A [root=true]
+	"A.C" [shape=doublecircle]
+	"A.B"
+	"A.B.C" [shape=doublecircle]
+	fake -> A [style=bold]
+	A -> A [label=0]
+	A -> "A.B" [label=1]
+	"A.B" -> "A.C" [label=0]
+	"A.B" -> "A.B.C" [label=1]
+	"A.C" -> A [label=0]
+	"A.C" -> "A.B" [label=1]
+	"A.B.C" -> "A.C" [label=0]
+	"A.B.C" -> "A.B.C" [label=1]
+	sink -> sink [label=1]
+	sink -> sink [label=0]
+}

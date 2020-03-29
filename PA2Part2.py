@@ -1,27 +1,41 @@
 from PySimpleAutomata import automata_IO, DFA, NFA
 import os
 
+
 def makeDFA():
-
-    states = getStates()
-    roots = getRoots(states)
-    acceptingStates = getAcceptingStates(states)
+    NFAStates = getNFAStates()
+    NFARoots = getRoots(NFAStates)
+    NFAAcceptingStates = getAcceptingStates(NFAStates)
     alphabet = getAlphabet()
-    NFATransitions = getNFATransitions(states, alphabet)
-    DFATransitionTable = buildDFATable(states, alphabet, NFATransitions, roots, acceptingStates)
-    #buildNFADotFile(states, alphabet, transitions, roots, acceptingStates)
+    NFATransitions = getNFATransitions(NFAStates, alphabet)
+    DFATransitionTable = buildDFATable(NFAStates, alphabet, NFATransitions, NFARoots, NFAAcceptingStates)
+    DFAStates = getDFAStates(DFATransitionTable)
+    DFARoot = getDFARoot(DFATransitionTable, NFARoots)
+    DFAAcceptingStates = getDFAAcceptingStates(DFAStates, NFAAcceptingStates)
+    buildDFADotFile(DFAStates, alphabet, DFATransitionTable, DFARoot, DFAAcceptingStates)
+    makeDFASVGFile()
 
 
-def getStates():
-
+def getNFAStates():
     states = input("Enter states, seperated by a comma and space: ")
     statesList = states.split(", ")
     statesTuple = tuple(statesList)
     return statesTuple
 
+def getDFAStates(DFATransitionTable):
+
+    DFAStates = []
+
+    for transition in DFATransitionTable:
+        if transition[0] not in DFAStates:
+            DFAStates.append(transition[0])
+        if transition[2] not in DFAStates:
+            DFAStates.append(transition[2])
+
+    return DFAStates
+
 
 def getRoots(states):
-
     numOfRoots = ""
     numOfRootsSelected = 0
     root = ""
@@ -42,7 +56,6 @@ def getRoots(states):
 
 
 def getAcceptingStates(states):
-
     numOfAcceptingStates = ""
     numOfAcceptingStatesSelected = 0
     acceptingState = ""
@@ -63,7 +76,6 @@ def getAcceptingStates(states):
 
 
 def getAlphabet():
-
     numOfSymbols = ""
     alphabetList = []
     alphabetTuple = ()
@@ -72,7 +84,7 @@ def getAlphabet():
         numOfSymbols = input("How many symbols? ")
 
     for i in range(int(numOfSymbols)):
-        alphabetList.append(input("Symbol " + str(i+1) + ": "))
+        alphabetList.append(input("Symbol " + str(i + 1) + ": "))
 
     alphabetTuple = tuple(alphabetList)
     print(alphabetTuple)
@@ -80,7 +92,6 @@ def getAlphabet():
 
 
 def getNFATransitions(states, alphabet):
-
     transitionsList = []
     transitionsTuple = ()
     numTransitions = ""
@@ -113,18 +124,17 @@ def getNFATransitions(states, alphabet):
 
 
 def buildDFATable(states, alphabet, NFATransitions, roots, acceptingStates):
-
     DFATransitionsInitial = []  # each table will be a tuple with 3 elements: initial state, transition, final state
     DFATransitionsFinal = []
 
-    DFATransitionsInitial = populateDFATransitionsInitalWithRoots(DFATransitionsInitial, roots, NFATransitions, alphabet)
-    DFATransitionsFinal = iterateThroughTables(DFATransitionsInitial, DFATransitionsFinal)
+    DFATransitionsInitial = populateDFATransitionsInitalWithRoots(DFATransitionsInitial, roots, NFATransitions,
+                                                                  alphabet)
+    DFATransitionsFinal = iterateThroughTables(DFATransitionsInitial, DFATransitionsFinal, NFATransitions, alphabet)
 
     return DFATransitionsFinal
 
 
 def populateDFATransitionsInitalWithRoots(DFATransitionsInitial, roots, NFATransitions, alphabet):
-
     rootsList = []
 
     for root in roots:
@@ -136,24 +146,30 @@ def populateDFATransitionsInitalWithRoots(DFATransitionsInitial, roots, NFATrans
 
 
 def aggregateStates(states):
-
-    newStates = ""
+    '''newStates = ""
 
     for state in states:
-        newStates = newStates + "," + state
-    newStates = newStates.replace(",", "", 1) # remove comma at beginning
+        newStates = newStates + "." + state
+    newStates = newStates.replace(".", "", 1)  # remove comma at beginning
     return newStates
-
+    '''
+    newStates = []
+    newState = ""
+    for state in states:
+        newStates.append(state)
+    newStates.sort()
+    for state in newStates:
+        newState = newState + "." + state
+    newState = newState.replace(".", "", 1)  # remove period at beginning
+    return newState
 
 def statesComposition(state):
-
-    states = state.split(",")
+    states = state.split(".")
 
     return states
 
 
 def getStateTransition(initialState, NFATransitions, alphabet):
-
     initialStatesList = statesComposition(initialState)
     transitionTable = []
 
@@ -169,8 +185,70 @@ def getStateTransition(initialState, NFATransitions, alphabet):
     return transitionTable
 
 
-def iterateThroughTables(DFATransitionsInitial, DFATransitionsFinal):
-
+def iterateThroughTables(DFATransitionsInitial, DFATransitionsFinal, NFATransitions, alphabet):
     while len(DFATransitionsInitial) > 0:
+
+        newTransition = getStateTransition(DFATransitionsInitial[0][2], NFATransitions, alphabet)
+        for transition in newTransition:
+            if transition not in DFATransitionsFinal:
+                DFATransitionsInitial.append(transition)
+        if DFATransitionsInitial[0] not in DFATransitionsFinal:
+            DFATransitionsFinal.append(DFATransitionsInitial[0])
+        DFATransitionsInitial.pop(0)
+
+    return DFATransitionsFinal
+
+
+def buildDFADotFile(states, alphabet, transitions, roots, acceptingStates):
+    dotFile = open("PA2.dot", "+w")
+
+    dotFile.write("digraph{\n\t")
+
+    for state in states:
+        dotFile.write(state)
+        if state in roots and state in acceptingStates:
+            dotFile.write(" [root=true, shape=doublecircle]")
+        elif state in roots:
+            dotFile.write(" [root=true]")
+        elif state in acceptingStates:
+            dotFile.write(" [shape=doublecircle]")
+        dotFile.write("\n\t")
+
+    for transition in transitions:
+        dotFile.write(transition[0] + " -> " + transition[2] + " [label=\"" + transition[1] + "\"]\n\t")
+
+    dotFile.write("}")
+    return dotFile
+
+
+def getDFARoot(DFATransitionTable, NFARoots):
+
+    for transition in DFATransitionTable:
+        states = transition[0]
+        for state in statesComposition(states):
+            if state in NFARoots:
+                return states
+
+
+def getDFAAcceptingStates(DFAStates, NFAAcceptingStates):
+
+    DFAAcceptingStates = []
+
+    for stateAggregate in DFAStates:
+        for state in statesComposition(stateAggregate):
+            if state in NFAAcceptingStates and stateAggregate not in DFAAcceptingStates:
+                DFAAcceptingStates.append(stateAggregate)
+
+    return tuple(DFAAcceptingStates)
+
+def makeDFASVGFile():
+
+    os.environ["PATH"] += os.pathsep + 'D:/Program Files (x86)/Graphviz2.38/bin/'
+    dfa_example = automata_IO.dfa_dot_importer("PA2.dot")
+    DFA.dfa_completion(dfa_example)
+    DFA.dfa_minimization(dfa_example)
+    automata_IO.dfa_to_dot(dfa_example, "DFA", r"D:/School/Concordia - Graduate Diploma in Computer Science/COMP 5361 - "
+                                           r"Discrete Structures and Formal Languages/Programming Assignment 2")
+
 
 makeDFA()

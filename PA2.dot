@@ -1,0 +1,10 @@
+digraph{
+	A [root=true]
+	B
+	C [shape=doublecircle]
+	A -> A [label="0"]
+	A -> A [label="1"]
+	A -> B [label="1"]
+	B -> C [label="0"]
+	B -> C [label="1"]
+	}
