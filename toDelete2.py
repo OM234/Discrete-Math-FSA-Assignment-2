@@ -10,6 +10,16 @@ def makeDFA():
     NFAAcceptingStates = getAcceptingStates(NFAStates)
     alphabet = getAlphabet()
     NFATransitions = getNFATransitions(NFAStates, alphabet)
+    '''
+    NFAStates = ("A", "B", "C",)
+    NFARoots = ("A",)
+    alphabet = ("a", "b")
+    NFAAcceptingStates = ("C",)
+    NFATransitions = (
+        ("A", "a", "A"), ("A", "a", "B"), ("A", "b", "C"),
+        ("B", "a", "A"), ("B", "b", "B"), ("C", "b", "B"),
+        ("C", "b", "A"))
+    '''
     DFATransitionTable = buildDFATable(NFAStates, alphabet, NFATransitions, NFARoots, NFAAcceptingStates)
     DFAStates = getDFAStates(DFATransitionTable)
     DFARoot = getDFARoot(DFATransitionTable, NFARoots)
@@ -272,6 +282,8 @@ def makeDFASVGFile():
 
     os.environ["PATH"] += os.pathsep + 'D:/Program Files (x86)/Graphviz2.38/bin/'
     dfa_example = automata_IO.dfa_dot_importer("PA2.dot")
+    #DFA.dfa_completion(dfa_example)
+    #DFA.dfa_minimization(dfa_example)
     automata_IO.dfa_to_dot(dfa_example, "DFA", r"D:/School/Concordia - Graduate Diploma in Computer Science/COMP 5361 - "
                                            r"Discrete Structures and Formal Languages/Programming Assignment 2")
 
