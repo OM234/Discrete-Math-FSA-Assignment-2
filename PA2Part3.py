@@ -11,18 +11,6 @@ def makeDFA():
     alphabet = getAlphabet()
     transitions = getDFATransitions(states, alphabet)
     buildDFADotFile(states, alphabet, transitions, root, acceptingStates)
-    '''
-    states = ("A", "B", "C", "D", "E", "F",)
-    root = "A"
-    alphabet = ("0", "1")
-    acceptingStates = ("C", "D", "E")
-    transitions = (
-        ("A", "0", "B"), ("A", "1", "C"), ("B", "0", "A"),
-        ("B", "1", "D"), ("C", "0", "E"), ("C", "1", "F"),
-        ("D", "0", "E"), ("D", "1", "F"), ("E", "0", "E"),
-        ("E", "1", "F"), ("F", "0", "F"), ("F", "1", "F"),
-        )
-    '''
     minimizeDFA(states, alphabet, transitions, root, acceptingStates)
 
 
@@ -108,13 +96,17 @@ def getDFATransitions(states, alphabet):
 
 
 def removeUnreachable(states, transitions, root):
-    newStates = [root]
 
-    for transition in transitions:
-        if (transition[2] not in newStates) and (transition[0] != transition[2]):
-            newStates.append(transition[2])
+    initialStates = [root, ]
+    resultStates = []
 
-    return newStates
+    while len(initialStates) > 0:
+        for transition in transitions:
+            if transition[0] == initialStates[0] and transition[2] not in resultStates and transition[2] not in initialStates:
+                initialStates.append(transition[2])
+        resultStates.append(initialStates.pop(0))
+
+    return resultStates
 
 
 def makeEquivalenceLists(equivalenceLists, states, alphabet, transitions, root, acceptingStates):
@@ -326,4 +318,15 @@ acceptingStates = ("E",)
 transitions = (("A", "0", "B"), ("A", "1", "C"), ("B", "0", "B"), ("B", "1", "D"), ("C", "0", "B"),
                ("C", "1", "C"), ("D", "0", "B"), ("D", "1", "E"), ("E", "0", "B"),
                ("E", "1", "C"))
+'''
+
+'''
+states = ("q0", "q1", "q2", "q3", "q4", "q5")
+root = "q0"
+alphabet = ("0", "1")
+acceptingStates = ("q3", "q5")
+transitions = (("q0", "0", "q1"), ("q0", "1", "q3"), ("q1", "0", "q0"), ("q1", "1", "q3"),
+               ("q2", "0", "q1"), ("q2", "1", "q4"), ("q3", "0", "q5"), ("q3", "1", "q5"),
+               ("q4", "0", "q3"), ("q4", "1", "q3"), ("q5", "0", "q5"), ("q5", "1", "q5"),
+               )
 '''
