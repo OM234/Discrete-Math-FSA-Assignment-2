@@ -4,7 +4,6 @@ import os
 
 
 def makeDFA():
-
     NFAStates = getNFAStates()
     NFARoots = getRoots(NFAStates)
     NFAAcceptingStates = getAcceptingStates(NFAStates)
@@ -26,8 +25,8 @@ def getNFAStates():
     statesTuple = tuple(statesList)
     return statesTuple
 
-def getDFAStates(DFATransitionTable):
 
+def getDFAStates(DFATransitionTable):
     DFAStates = []
 
     for transition in DFATransitionTable:
@@ -150,7 +149,6 @@ def populateDFATransitionsInitalWithRoots(DFATransitionsInitial, roots, NFATrans
 
 
 def aggregateStates(states):
-
     newStates = []
     newState = ""
     for state in states:
@@ -163,7 +161,6 @@ def aggregateStates(states):
 
 
 def statesComposition(state):
-
     states = state.split(".")
 
     return states
@@ -186,7 +183,6 @@ def getStateTransition(initialState, NFATransitions, alphabet):
 
 
 def iterateThroughTables(DFATransitionsInitial, DFATransitionsFinal, NFATransitions, alphabet):
-
     while len(DFATransitionsInitial) > 0:
 
         newTransition = getStateTransition(DFATransitionsInitial[0][2], NFATransitions, alphabet)
@@ -223,7 +219,6 @@ def buildDFADotFile(states, alphabet, transitions, roots, acceptingStates):
 
 
 def getDFARoot(DFATransitionTable, NFARoots):
-
     for transition in DFATransitionTable:
         states = transition[0]
         for state in statesComposition(states):
@@ -232,7 +227,6 @@ def getDFARoot(DFATransitionTable, NFARoots):
 
 
 def getDFAAcceptingStates(DFAStates, NFAAcceptingStates):
-
     DFAAcceptingStates = []
 
     for stateAggregate in DFAStates:
@@ -242,8 +236,8 @@ def getDFAAcceptingStates(DFAStates, NFAAcceptingStates):
 
     return tuple(DFAAcceptingStates)
 
-def DFATransitionCompletion(DFATransitionTable, DFAStates, alphabet):
 
+def DFATransitionCompletion(DFATransitionTable, DFAStates, alphabet):
     completeTransitionTable = DFATransitionTable.copy()
     hasTrap = False
 
@@ -251,7 +245,7 @@ def DFATransitionCompletion(DFATransitionTable, DFAStates, alphabet):
         for symbol in alphabet:
             for transition in DFATransitionTable:
                 alreadyComplete = False
-                if(transition[0] == state and transition[1] == symbol):
+                if (transition[0] == state and transition[1] == symbol):
                     alreadyComplete = True
                     break
             if not alreadyComplete:
@@ -265,19 +259,15 @@ def DFATransitionCompletion(DFATransitionTable, DFAStates, alphabet):
     return completeTransitionTable
 
 
-
-
-
 def makeDFASVGFile():
-
     os.environ["PATH"] += os.pathsep + 'D:/Program Files (x86)/Graphviz2.38/bin/'
     dfa_example = automata_IO.dfa_dot_importer("PA2.dot")
-    automata_IO.dfa_to_dot(dfa_example, "DFA", r"D:/School/Concordia - Graduate Diploma in Computer Science/COMP 5361 - "
-                                           r"Discrete Structures and Formal Languages/Programming Assignment 2")
+    automata_IO.dfa_to_dot(dfa_example, "DFA",
+                           r"D:/School/Concordia - Graduate Diploma in Computer Science/COMP 5361 - "
+                           r"Discrete Structures and Formal Languages/Programming Assignment 2")
 
 
 def printTable(DFAStates, alphabet, DFATransitionTable, DFARoot, DFAAcceptingStates):
-
     DFARoot = (DFARoot,)
     TablePrinter.generateTable(DFAStates, alphabet, DFATransitionTable, DFARoot, DFAAcceptingStates)
 
