@@ -11,11 +11,22 @@ def makeDFA():
     alphabet = getAlphabet()
     transitions = getDFATransitions(states, alphabet)
     buildDFADotFile(states, alphabet, transitions, root, acceptingStates)
+    '''
+    states = ("A", "B", "C", "D", "E", "F",)
+    root = "A"
+    alphabet = ("0", "1")
+    acceptingStates = ("C", "D", "E")
+    transitions = (
+        ("A", "0", "B"), ("A", "1", "C"), ("B", "0", "A"),
+        ("B", "1", "D"), ("C", "0", "E"), ("C", "1", "F"),
+        ("D", "0", "E"), ("D", "1", "F"), ("E", "0", "E"),
+        ("E", "1", "F"), ("F", "0", "F"), ("F", "1", "F"),
+        )
+    '''
     minimizeDFA(states, alphabet, transitions, root, acceptingStates)
 
 
 def minimizeDFA(states, alphabet, transitions, root, acceptingStates):
-
     equivalenceLists = []
     minStates = removeUnreachable(states, transitions, root)
     equivalenceLists = makeEquivalenceLists(equivalenceLists, minStates, alphabet, transitions, root, acceptingStates)
@@ -29,7 +40,6 @@ def minimizeDFA(states, alphabet, transitions, root, acceptingStates):
 
 
 def getStates():
-
     states = input("Enter states, seperated by a comma and space: ")
     statesList = states.split(", ")
     statesTuple = tuple(statesList)
@@ -37,7 +47,6 @@ def getStates():
 
 
 def getRoot(states):
-
     print(states)
     while True:  # error checking
         root = input("Which one is the root? ")
@@ -46,7 +55,6 @@ def getRoot(states):
 
 
 def getAcceptingStates(states):
-
     numOfAcceptingStates = ""
     numOfAcceptingStatesSelected = 0
     acceptingState = ""
@@ -67,7 +75,6 @@ def getAcceptingStates(states):
 
 
 def getAlphabet():
-
     numOfSymbols = ""
     alphabetList = []
     alphabetTuple = ()
@@ -76,7 +83,7 @@ def getAlphabet():
         numOfSymbols = input("How many symbols? ")
 
     for i in range(int(numOfSymbols)):
-        alphabetList.append(input("Symbol " + str(i+1) + ": "))
+        alphabetList.append(input("Symbol " + str(i + 1) + ": "))
 
     alphabetTuple = tuple(alphabetList)
     print(alphabetTuple)
@@ -84,7 +91,6 @@ def getAlphabet():
 
 
 def getDFATransitions(states, alphabet):
-
     transitionsList = []
     transitionsTuple = ()
     resultState = ""
@@ -102,7 +108,6 @@ def getDFATransitions(states, alphabet):
 
 
 def removeUnreachable(states, transitions, root):
-
     newStates = [root]
 
     for transition in transitions:
@@ -111,8 +116,8 @@ def removeUnreachable(states, transitions, root):
 
     return newStates
 
-def makeEquivalenceLists(equivalenceLists, states, alphabet, transitions, root, acceptingStates):
 
+def makeEquivalenceLists(equivalenceLists, states, alphabet, transitions, root, acceptingStates):
     equivalenceLists = getZeroEquivalence(equivalenceLists, states, acceptingStates)
     newEquivalenceList = []
 
@@ -141,7 +146,6 @@ def getZeroEquivalence(equivalenceLists, states, acceptingStates):
 
 
 def getNEquivalance(equivalenceLists, states, alphabet, transitions, root, acceptingStates):
-
     newEquivalanceLists = []
 
     for equivalenceList in equivalenceLists:
@@ -149,9 +153,11 @@ def getNEquivalance(equivalenceLists, states, alphabet, transitions, root, accep
             equivalenceFound = False
             for newEquivalenceList in newEquivalanceLists:
                 for newState in newEquivalenceList:
-                    if isEquivalent(state, newState, equivalenceList, transitions, alphabet, acceptingStates):
+                    if isEquivalent(state, newState, equivalenceLists, transitions, alphabet, acceptingStates):
                         equivalenceFound = True
                         newEquivalenceList.append(state)
+                        break
+                    else:
                         break
                 if equivalenceFound:
                     break
@@ -161,8 +167,7 @@ def getNEquivalance(equivalenceLists, states, alphabet, transitions, root, accep
     return newEquivalanceLists
 
 
-def isEquivalent(state, newState, equivalenceList, transitions, alphabet, acceptingStates):
-
+def isEquivalent(state, newState, equivalenceLists, transitions, alphabet, acceptingStates):
     resultState = []
     resultNewState = []
 
@@ -181,19 +186,24 @@ def isEquivalent(state, newState, equivalenceList, transitions, alphabet, accept
     if resultState == resultNewState:
         return True
 
-    for state in resultState:
-        if state not in equivalenceList:
-            return False
-
-    for state in resultNewState:
-        if state not in equivalenceList:
+    for equivalenceList in equivalenceLists:
+        stateInList = False
+        newStateInList = False
+        for state in resultState:
+            if state in equivalenceList:
+                stateInList = True
+                break
+        for state in resultNewState:
+            if state in equivalenceList:
+                newStateInList = True
+                break
+        if stateInList != newStateInList:
             return False
 
     return True
 
 
 def getMinStates(equivalenceLists):
-
     minStates = []
 
     for equivalenceList in equivalenceLists:
@@ -206,7 +216,6 @@ def getMinStates(equivalenceLists):
 
 
 def getMinTransitions(minStates, transitions, alphabet):
-
     minTransitions = []
 
     for state in minStates:
@@ -217,7 +226,6 @@ def getMinTransitions(minStates, transitions, alphabet):
 
 
 def aggregateStates(states):
-
     newStates = []
     newState = ""
     for state in states:
@@ -230,14 +238,12 @@ def aggregateStates(states):
 
 
 def statesComposition(state):
-
     states = state.split(".")
 
     return states
 
 
 def getStateTransitions(initialState, minStates, transitions, alphabet):
-
     initialStatesList = statesComposition(initialState)
     transitionTable = []
 
@@ -259,20 +265,18 @@ def getStateTransitions(initialState, minStates, transitions, alphabet):
 
 
 def getMinRoot(minStates, root):
-
     for state in minStates:
         if root in statesComposition(state):
             return state
 
 
 def getMinAcceptingStates(minStates, acceptingStates):
-
     newAcceptingStates = []
 
     for state in minStates:
         for acceptingState in acceptingStates:
-            if acceptingState in statesComposition(state) and acceptingState not in newAcceptingStates:
-                newAcceptingStates.append(acceptingState)
+            if acceptingState in statesComposition(state) and state not in newAcceptingStates:
+                newAcceptingStates.append(state)
 
     return newAcceptingStates
 
@@ -300,24 +304,19 @@ def buildDFADotFile(states, alphabet, transitions, roots, acceptingStates):
 
 
 def makeDFASVGFile():
-
     os.environ["PATH"] += os.pathsep + 'D:/Program Files (x86)/Graphviz2.38/bin/'
     dfa_example = automata_IO.dfa_dot_importer("PA2.dot")
-    DFA.dfa_completion(dfa_example)
-    DFA.dfa_minimization(dfa_example)
-    automata_IO.dfa_to_dot(dfa_example, "DFA", r"D:/School/Concordia - Graduate Diploma in Computer Science/COMP 5361 - "
-                                           r"Discrete Structures and Formal Languages/Programming Assignment 2")
+    automata_IO.dfa_to_dot(dfa_example, "DFA",
+                           r"D:/School/Concordia - Graduate Diploma in Computer Science/COMP 5361 - "
+                           r"Discrete Structures and Formal Languages/Programming Assignment 2")
 
 
 def printTable(DFAStates, alphabet, DFATransitionTable, DFARoot, DFAAcceptingStates):
-
     DFARoot = (DFARoot,)
     TablePrinter.generateTable(DFAStates, alphabet, DFATransitionTable, DFARoot, DFAAcceptingStates)
 
+
 makeDFA()
-
-
-
 
 '''
 states = ("A", "B", "C", "D", "E")
